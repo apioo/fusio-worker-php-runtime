@@ -6,6 +6,8 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Tools\DsnParser;
 use Elasticsearch\ClientBuilder;
 use Fusio\Worker\ExecuteConnection;
+use Fusio\Worker\Runtime\Exception\ConnectionNotFoundException;
+use Fusio\Worker\Runtime\Exception\InvalidConnectionTypeException;
 use GuzzleHttp\Client;
 use PSX\Record\Record;
 
@@ -27,7 +29,7 @@ class Connector
         }
 
         if (!$this->connections->containsKey($name)) {
-            throw new \RuntimeException('Connection does not exist');
+            throw new ConnectionNotFoundException('Connection ' . $name . ' does not exist');
         }
 
         /** @var ExecuteConnection $connection */
@@ -85,7 +87,7 @@ class Connector
 
             return $this->instances[$name] = $client;
         } else {
-            throw new \RuntimeException('Provided a not supported connection type: ' . $connection->getType());
+            throw new InvalidConnectionTypeException('Provided a not supported connection type: ' . $connection->getType());
         }
     }
 }
