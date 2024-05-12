@@ -11,6 +11,7 @@
         }
     ],
     "require": {
+        "php": ">=8.1",
         "fusio/worker-sdk": "^0.1",
         "doctrine/dbal": "^3.1",
         "guzzlehttp/guzzle": "^7.3",
