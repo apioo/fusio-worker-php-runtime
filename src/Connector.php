@@ -3,11 +3,14 @@
 namespace Fusio\Worker\Runtime;
 
 use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Tools\DsnParser;
 use Elasticsearch\ClientBuilder;
 use Fusio\Worker\ExecuteConnection;
+use Fusio\Worker\Runtime\Exception\ConnectionException;
 use Fusio\Worker\Runtime\Exception\ConnectionNotFoundException;
 use Fusio\Worker\Runtime\Exception\InvalidConnectionTypeException;
+use Fusio\Worker\Runtime\Exception\RuntimeException;
 use GuzzleHttp\Client;
 use PSX\Record\Record;
 
@@ -22,6 +25,9 @@ class Connector
         $this->instances = [];
     }
 
+    /**
+     * @throws RuntimeException
+     */
     public function getConnection(string $name): mixed
     {
         if (isset($this->instances[$name])) {
@@ -37,22 +43,31 @@ class Connector
         $config = \json_decode(\base64_decode($connection->getConfig() ?? ''));
 
         if ($connection->getType() === 'Fusio.Adapter.Sql.Connection.Sql') {
-            $database = $config->database ?? null;
-            $username = $config->username ?? null;
-            $password = $config->password ?? null;
-            $host = $config->host ?? null;
-            $type = $config->type ?? null;
+            $params = [
+                'dbname'   => $config->database ?? null,
+                'user'     => $config->username ?? null,
+                'password' => $config->password ?? null,
+                'host'     => $config->host ?? null,
+                'driver'   => $config->type ?? null,
+            ];
 
-            return $this->instances[$name] = DriverManager::getConnection([
-                'dbname'   => $database,
-                'user'     => $username,
-                'password' => $password,
-                'host'     => $host,
-                'driver'   => $type,
-            ]);
+            try {
+                $instance = DriverManager::getConnection($params);
+            } catch (Exception $e) {
+                throw new ConnectionException('Could not establish connection', previous: $e);
+            }
+
+            return $this->instances[$name] = $instance;
         } else if ($connection->getType() === 'Fusio.Adapter.Sql.Connection.SqlAdvanced') {
             $params = (new DsnParser())->parse($config->url ?? '');
-            return $this->instances[$name] = DriverManager::getConnection($params);
+
+            try {
+                $instance = DriverManager::getConnection($params);
+            } catch (Exception $e) {
+                throw new ConnectionException('Could not establish connection', previous: $e);
+            }
+
+            return $this->instances[$name] = $instance;
         } else if ($connection->getType() === 'Fusio.Adapter.Http.Connection.Http') {
             $options = [];
 
