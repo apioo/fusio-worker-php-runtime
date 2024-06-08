@@ -20,7 +20,7 @@
         "mongodb/mongodb": "^1.10",
         "sdkfabric/twitter": "^3.0",
         "sdkfabric/discord": "^0.2",
-        "sdkfabric/airtable": "^0.2",
+        "sdkfabric/airtable": "^0.4",
         "sdkfabric/notion": "^0.1",
         "sdkfabric/starwars": "^0.1"
     },
