@@ -3,59 +3,60 @@
 namespace Fusio\Worker\Runtime;
 
 use Fusio\Worker\ResponseLog;
+use Psr\Log\LoggerInterface;
 
-class Logger
+class Logger implements LoggerInterface
 {
     /**
      * @var ResponseLog[]
      */
     private array $logs = [];
 
-    public function emergency(string $message): void
+    public function emergency(string|\Stringable $message, array $context = []): void
     {
         $this->log('EMERGENCY', $message);
     }
 
-    public function alert(string $message): void
+    public function alert(string|\Stringable $message, array $context = []): void
     {
         $this->log('ALERT', $message);
     }
 
-    public function critical(string $message): void
+    public function critical(string|\Stringable $message, array $context = []): void
     {
         $this->log('CRITICAL', $message);
     }
 
-    public function error(string $message): void
+    public function error(string|\Stringable $message, array $context = []): void
     {
         $this->log('ERROR', $message);
     }
 
-    public function warning(string $message): void
+    public function warning(string|\Stringable $message, array $context = []): void
     {
         $this->log('WARNING', $message);
     }
 
-    public function notice(string $message): void
+    public function notice(string|\Stringable $message, array $context = []): void
     {
         $this->log('NOTICE', $message);
     }
 
-    public function info(string $message): void
+    public function info(string|\Stringable $message, array $context = []): void
     {
         $this->log('INFO', $message);
     }
 
-    public function debug(string $message): void
+    public function debug(string|\Stringable $message, array $context = []): void
     {
         $this->log('DEBUG', $message);
     }
 
-    private function log(string $level, string $message): void
+    public function log($level, string|\Stringable $message, array $context = []): void
     {
         $log = new ResponseLog();
         $log->setLevel($level);
-        $log->setMessage($message);
+        $log->setMessage((string) $message);
 
         $this->logs[] = $log;
     }

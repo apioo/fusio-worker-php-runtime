@@ -10,6 +10,7 @@ use Fusio\Worker\Runtime\Exception\FileNotFoundException;
 use Fusio\Worker\Runtime\Exception\InvalidActionException;
 use Fusio\Worker\Runtime\Exception\InvalidPayloadException;
 use Fusio\Worker\Runtime\Exception\RuntimeException;
+use PSX\Http\Environment\HttpResponseInterface;
 use PSX\Record\Record;
 use PSX\Schema\Exception\InvalidSchemaException;
 use PSX\Schema\Exception\ValidationException;
@@ -51,7 +52,7 @@ class Runtime
             throw new InvalidActionException('Provided action does not return a callable');
         }
 
-        call_user_func_array($handler, [
+        $return = call_user_func_array($handler, [
             $payload->getRequest(),
             $payload->getContext(),
             $connector,
@@ -60,18 +61,22 @@ class Runtime
             $logger
         ]);
 
-        $response = $responseBuilder->getResponse();
-        if (!$response instanceof ResponseHTTP) {
+        if ($return instanceof HttpResponseInterface) {
+            $response = new ResponseHTTP();
+            $response->setStatusCode($return->getStatusCode());
+            $response->setHeaders(Record::fromArray($return->getHeaders()));
+            $response->setBody($return->getBody());
+        } else {
             $response = new ResponseHTTP();
             $response->setStatusCode(204);
         }
 
-        $return = new Response();
-        $return->setEvents($dispatcher->getEvents());
-        $return->setLogs($logger->getLogs());
-        $return->setResponse($response);
+        $workerResponse = new Response();
+        $workerResponse->setEvents($dispatcher->getEvents());
+        $workerResponse->setLogs($logger->getLogs());
+        $workerResponse->setResponse($response);
 
-        return $return;
+        return $workerResponse;
     }
 
     /**

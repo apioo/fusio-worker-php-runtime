@@ -2,23 +2,14 @@
 
 namespace Fusio\Worker\Runtime;
 
-use Fusio\Worker\ResponseHTTP;
-use PSX\Record\Record;
+use Fusio\Engine\Response\FactoryInterface;
+use PSX\Http\Environment\HttpResponse;
+use PSX\Http\Environment\HttpResponseInterface;
 
-class ResponseBuilder
+class ResponseBuilder implements FactoryInterface
 {
-    private ?ResponseHTTP $response = null;
-
-    public function build(int $statusCode, array $headers, mixed $body): void
+    public function build(int $statusCode, array $headers, mixed $body): HttpResponseInterface
     {
-        $this->response = new ResponseHTTP();
-        $this->response->setStatusCode($statusCode);
-        $this->response->setHeaders(Record::fromArray($headers));
-        $this->response->setBody($body);
-    }
-
-    public function getResponse(): ?ResponseHTTP
-    {
-        return $this->response;
+        return new HttpResponse($statusCode, $headers, $body);
     }
 }
