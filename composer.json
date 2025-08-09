@@ -12,16 +12,16 @@
     ],
     "require": {
         "php": ">=8.1",
-        "fusio/worker-sdk": "^0.1",
+        "fusio/worker-sdk": "^0.2",
         "fusio/engine": "^6.5",
         "doctrine/dbal": "^3.1",
         "guzzlehttp/guzzle": "^7.3",
         "elasticsearch/elasticsearch": "^7.15",
-        "mongodb/mongodb": "^1.10",
+        "mongodb/mongodb": "^2.1",
         "sdkfabric/twitter": "^3.0",
         "sdkfabric/discord": "^0.2",
         "sdkfabric/airtable": "^0.4",
-        "sdkfabric/notion": "^0.1",
+        "sdkfabric/notion": "^v0.2",
         "sdkfabric/starwars": "^0.1"
     },
     "require-dev": {
