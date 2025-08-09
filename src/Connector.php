@@ -138,7 +138,7 @@ class Connector implements ConnectorInterface
 
     private function newSdkFabricConnectionStarwars(): \SdkFabric\Starwars\Client
     {
-        return \SdkFabric\Starwars\Client::build();
+        return \SdkFabric\Starwars\Client::buildAnonymous();
     }
 
     private function newSdkFabricConnectionTwitter(\stdClass $config): \SdkFabric\Twitter\Client
